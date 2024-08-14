@@ -1,13 +1,29 @@
-import React, { useEffect, useState } from 'react';
-// import Navbar from './Navbar';
+import React, { useEffect, useState, ChangeEvent } from 'react';
 import { ThreeDCardDemo } from './components/ui/test';
 
-const Home = () => {
+interface Pokemon {
+    id: number;
+    name: string;
+    types: { type: { name: string } }[];
+    height: number;
+    weight: number;
+    stats: { base_stat: number }[];
+    abilities: { ability: { name: string } }[];
+    sprites: {
+        other: {
+            dream_world: {
+                front_default: string;
+            };
+        };
+    };
+}
+
+const Home: React.FC = () => {
     const API = "https://pokeapi.co/api/v2/pokemon?limit=24";
-    const [pokemon, setPokemon] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-    const [search, setSearch] = useState("");
+    const [pokemon, setPokemon] = useState<Pokemon[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string>("");
+    const [search, setSearch] = useState<string>("");
 
     const fetchPoki = async () => {
         try {
@@ -16,7 +32,7 @@ const Home = () => {
                 throw new Error('Network response was not ok.');
             }
             const data = await res.json();
-            const DetailPokiData = data.results.map(async (curPoki) => {
+            const DetailPokiData = data.results.map(async (curPoki: { url: string }) => {
                 const res = await fetch(curPoki.url);
                 if (!res.ok) {
                     throw new Error('Network response was not ok.');
@@ -25,12 +41,12 @@ const Home = () => {
                 return data;
             });
             const detailedResponse = await Promise.all(DetailPokiData);
-            setPokemon(detailedResponse);
+            setPokemon(detailedResponse as Pokemon[]);
         } catch (error) {
             console.error("Error fetching Pokémon data:", error);
             setError(error.message || 'An error occurred while fetching data.');
         } finally {
-            setLoading(false); // Ensure loading is set to false in both success and error cases
+            setLoading(false);
         }
     };
 
@@ -54,7 +70,7 @@ const Home = () => {
     if (error) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <h1 className="text-lg font-bold text-red-500">{error}</h1> {/* Display error message */}
+                <h1 className="text-lg font-bold text-red-500">{error}</h1>
             </div>
         );
     }
@@ -70,7 +86,7 @@ const Home = () => {
                         <input
                             type="text"
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                             className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-400"
                             placeholder="Search Pokémon..."
                         />

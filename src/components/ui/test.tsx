@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CardContainer, CardBody, CardItem } from './3d-card';
-
+import { Button } from '@mui/material';
 
 function capitalizeFirstLetter(str: string): string {
     if (!str) return '';
@@ -63,15 +63,13 @@ export function ThreeDCardDemo({ pokemonData }: ThreeDCardDemoProps) {
                 </CardItem>
 
                 <div className='flex justify-center mt-4'>
-                    <CardItem
-                        as="button"
-                        translateZ={60}
+                    <Button variant='contained'
+                        color='secondary'
                         onClick={handleButtonClick}
-                        className="px-4 py-2 rounded-xl bg-black dark:bg-yellow-400 dark:text-black text-white text-xs font-bold mt-2
-               transition-transform transform hover:scale-105 hover:bg-gray-800 dark:hover:bg-yellow-500"
+                        className="px-4 py-2"
                     >
-                        Click me
-                    </CardItem>
+                        Click Me!
+                    </Button>
                 </div>
             </CardBody>
         </CardContainer>

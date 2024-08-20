@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CardContainer, CardBody, CardItem } from './3d-card';
-//import { Button } from '@mui/material';
+
 
 function capitalizeFirstLetter(str: string): string {
     if (!str) return '';
@@ -33,7 +33,7 @@ export function ThreeDCardDemo({ pokemonData }: ThreeDCardDemoProps) {
     const navigate = useNavigate();
 
     const handleButtonClick = () => {
-        navigate(`/pokemon`); // Navigate to the Pokemon route
+        navigate(`/pokemon/${pokemonData.id}`, { state: { pokemonData } });
     }
 
     return (
@@ -52,12 +52,12 @@ export function ThreeDCardDemo({ pokemonData }: ThreeDCardDemoProps) {
                 >
                     {pokemonData.types.map(curType => curType.type.name).join(", ")}
                 </CardItem>
-                <CardItem translateZ={100} className="w-full h-full mt-4 overflow-hidden ">
+                <CardItem translateZ={100} className="w-full h-full mt-4 overflow-hidden">
                     <img
                         src={pokemonData.sprites.other.dream_world.front_default}
                         height="100"
                         width="100"
-                        className="w-80 h-80 object-cover  group-hover/card:shadow-x"
+                        className="w-80 h-80 object-cover group-hover/card:shadow-x"
                         alt={pokemonData.name}
                     />
                 </CardItem>
@@ -72,10 +72,8 @@ export function ThreeDCardDemo({ pokemonData }: ThreeDCardDemoProps) {
                     >
                         Click me
                     </CardItem>
-
                 </div>
             </CardBody>
         </CardContainer>
     );
 }
-

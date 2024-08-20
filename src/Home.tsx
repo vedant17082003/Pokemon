@@ -1,7 +1,10 @@
-import React, { useEffect, useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import LinearProgress from '@mui/material/LinearProgress';
 import { ThreeDCardDemo } from './components/ui/test';
 
-interface Pokemon {
+
+type Pokemon = {
     id: number;
     name: string;
     types: { type: { name: string } }[];
@@ -16,61 +19,52 @@ interface Pokemon {
             };
         };
     };
-}
+};
 
-const Home: React.FC = () => {
-    const API = "https://pokeapi.co/api/v2/pokemon?limit=24";
-    const [pokemon, setPokemon] = useState<Pokemon[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>("");
+
+const getPokemon = async (): Promise<Pokemon[]> => {
+    const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=24");
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    const detailedPokemons = await Promise.all(
+        data.results.map(async (pokemon: { url: string }) => {
+            const res = await fetch(pokemon.url);
+            if (!res.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return await res.json();
+        })
+    );
+    return detailedPokemons;
+};
+
+function Home() {
+    const { isLoading, isError, data, error } = useQuery<Pokemon[]>({
+        queryKey: ['currpokemon'],
+        queryFn: getPokemon,
+    });
+
     const [search, setSearch] = useState<string>("");
 
-    const fetchPoki = async () => {
-        try {
-            const res = await fetch(API);
-            if (!res.ok) {
-                throw new Error('Network response was not ok.');
-            }
-            const data = await res.json();
-            const DetailPokiData = data.results.map(async (curPoki: { url: string }) => {
-                const res = await fetch(curPoki.url);
-                if (!res.ok) {
-                    throw new Error('Network response was not ok.');
-                }
-                const data = await res.json();
-                return data;
-            });
-            const detailedResponse = await Promise.all(DetailPokiData);
-            setPokemon(detailedResponse as Pokemon[]);
-        } catch (error) {
-            console.error("Error fetching Pokémon data:", error);
-            setError(error.message || 'An error occurred while fetching data.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchPoki();
-    }, []);
-
-    // Search filtering
-    const searchData = pokemon.filter((currpokemon) =>
-        currpokemon.name.toLowerCase().includes(search.toLowerCase())
+    // Filter Pokémon based on search input
+    const filteredData = data?.filter(pokemon =>
+        pokemon.name.toLowerCase().includes(search.toLowerCase())
     );
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <h1 className="text-lg font-bold">Loading...</h1>
+                <LinearProgress />
             </div>
         );
     }
 
-    if (error) {
+    if (isError) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <h1 className="text-lg font-bold text-red-500">{error}</h1>
+                <h1 className="text-lg font-bold text-red-500">{(error as Error).message}</h1>
             </div>
         );
     }
@@ -96,7 +90,7 @@ const Home: React.FC = () => {
             <div className='p-6 overflow-x-auto'>
                 <div className='max-w-screen-xl mx-auto px-4'>
                     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>
-                        {searchData.map((curPoki) => (
+                        {filteredData?.map((curPoki) => (
                             <ThreeDCardDemo key={curPoki.id} pokemonData={curPoki} />
                         ))}
                     </div>
@@ -104,6 +98,6 @@ const Home: React.FC = () => {
             </div>
         </>
     );
-};
+}
 
 export default Home;

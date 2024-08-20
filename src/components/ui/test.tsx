@@ -7,7 +7,7 @@ function capitalizeFirstLetter(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-interface Pokemon {
+type Pokemon = {
     id: number;
     name: string;
     types: { type: { name: string } }[];

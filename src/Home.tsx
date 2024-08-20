@@ -48,7 +48,7 @@ function Home() {
 
     const [search, setSearch] = useState<string>("");
 
-    // Filter Pokémon based on search input
+
     const filteredData = data?.filter(pokemon =>
         pokemon.name.toLowerCase().includes(search.toLowerCase())
     );

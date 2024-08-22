@@ -1,9 +1,10 @@
 import React, { useState, ChangeEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import LinearProgress from '@mui/material/LinearProgress';
+import { LinearProgress } from '@mui/material';
+import Navbar from './Navbar';
 import { ThreeDCardDemo } from './components/ui/test';
 
-
+// Define the Pokemon type
 type Pokemon = {
     id: number;
     name: string;
@@ -21,7 +22,7 @@ type Pokemon = {
     };
 };
 
-
+// Fetch Pokémon data from the API
 const getPokemon = async (): Promise<Pokemon[]> => {
     const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=24");
     if (!response.ok) {
@@ -48,7 +49,7 @@ function Home() {
 
     const [search, setSearch] = useState<string>("");
 
-
+    // Filter Pokémon based on search input
     const filteredData = data?.filter(pokemon =>
         pokemon.name.toLowerCase().includes(search.toLowerCase())
     );
@@ -72,20 +73,7 @@ function Home() {
     return (
         <>
             <div className='p-2'>
-                <nav className='flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-800'>
-                    <div>
-                        <img src='logo.png' alt='pokemon' className="w-48" />
-                    </div>
-                    <div className='text-black dark:text-white'>
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-400"
-                            placeholder="Search Pokémon..."
-                        />
-                    </div>
-                </nav>
+                <Navbar search={search} setSearch={setSearch} />
             </div>
             <div className='p-6 overflow-x-auto'>
                 <div className='max-w-screen-xl mx-auto px-4'>

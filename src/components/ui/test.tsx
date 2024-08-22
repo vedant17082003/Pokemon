@@ -1,12 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CardContainer, CardBody, CardItem } from './3d-card';
-import { Button } from '@mui/material';
-
-function capitalizeFirstLetter(str: string): string {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
+import { Card, CardContent, CardMedia, Typography, Button, Chip } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 type Pokemon = {
     id: number;
@@ -29,6 +24,35 @@ type ThreeDCardDemoProps = {
     pokemonData: Pokemon;
 }
 
+const CustomCard = styled(Card)(({ theme }) => ({
+    border: '1px solid rgba(0, 0, 0, 0.1)',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    maxWidth: 500,
+    width: '100%',
+    height: 'auto',
+    margin: '16px 8px',
+    transition: 'transform 0.3s, box-shadow 0.3s',
+    '&:hover': {
+        transform: 'scale(1.05)',
+        boxShadow: theme.shadows[10],
+    },
+}));
+
+const ImageWrapper = styled('div')({
+    backgroundColor: 'black',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '300px',
+    width: '100%',
+});
+
+const capitalizeFirstLetter = (str: string): string => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export function ThreeDCardDemo({ pokemonData }: ThreeDCardDemoProps) {
     const navigate = useNavigate();
 
@@ -37,33 +61,34 @@ export function ThreeDCardDemo({ pokemonData }: ThreeDCardDemoProps) {
     }
 
     return (
-        <CardContainer className="inter-var w-full max-w-sm mx-auto">
-            <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-6 border">
-                <CardItem
-                    translateZ={50}
-                    className="text-xl font-bold text-neutral-600 dark:text-white"
+        <CustomCard className="inter-var mx-auto">
+            <CardContent className="bg-gray-50 dark:bg-black dark:border-white/[0.2] p-4">
+                <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{ fontWeight: 'bold', mb: 2 }} // Remove color from sx
+                    className="text-2xl font-bold text-white" // Ensure text color is white
                 >
                     {capitalizeFirstLetter(pokemonData.name)}
-                </CardItem>
-                <CardItem
-                    as="button"
-                    translateZ={60}
-                    className="px-4 py-2 rounded-xl bg-black dark:bg-yellow-400 dark:text-black text-white text-xs font-bold mt-2"
-                >
-                    {pokemonData.types.map(curType => curType.type.name).join(", ")}
-                </CardItem>
-                <CardItem translateZ={100} className="w-full h-full mt-4 overflow-hidden">
-                    <img
-                        src={pokemonData.sprites.other.dream_world.front_default}
-                        height="100"
-                        width="100"
-                        className="w-80 h-80 object-cover group-hover/card:shadow-x"
+                </Typography>
+                <Chip
+                    label={pokemonData.types.map(curType => curType.type.name).join(", ")}
+                    color="secondary"
+                    sx={{ mb: 2 }}
+                    className="px-4 py-2 rounded-xl bg-black dark:bg-yellow-400 dark:text-black text-white text-xs font-bold"
+                />
+                <ImageWrapper>
+                    <CardMedia
+                        component="img"
+                        image={pokemonData.sprites.other.dream_world.front_default}
                         alt={pokemonData.name}
+                        sx={{ objectFit: 'cover', height: '100%', width: '100%' }}
                     />
-                </CardItem>
+                </ImageWrapper>
 
                 <div className='flex justify-center mt-4'>
-                    <Button variant='contained'
+                    <Button
+                        variant='contained'
                         color='secondary'
                         onClick={handleButtonClick}
                         className="px-4 py-2"
@@ -71,7 +96,7 @@ export function ThreeDCardDemo({ pokemonData }: ThreeDCardDemoProps) {
                         Click Me!
                     </Button>
                 </div>
-            </CardBody>
-        </CardContainer>
+            </CardContent>
+        </CustomCard>
     );
 }
